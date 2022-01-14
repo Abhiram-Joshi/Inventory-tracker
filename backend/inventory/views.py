@@ -1,4 +1,4 @@
-from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView
 from .serializers import *
 from .models import *
 from rest_framework.response import Response
@@ -52,3 +52,29 @@ class BuyItemView(UpdateAPIView):
                 "message": "Not enough quantity available",
                 "status": status.HTTP_400_BAD_REQUEST
             }, status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteItemView(DestroyAPIView):
+
+    def get_queryset(self):
+        return Item.objects.all()
+
+    def get_object(self):
+        item = self.get_queryset().filter(id=self.request.query_params["id"])
+        return item
+
+    def destroy(self, request, *args, **kwargs):
+        item = self.get_object()
+        if item.exists():
+            name = item[0].name
+            item.first().delete()
+            return Response({
+                "data": name,
+                "message": "Item removed",
+                "status": status.HTTP_200_OK,
+            }, status = status.HTTP_200_OK)
+        else:
+            return Response({
+                "data": [],
+                "message": "Item could not be removed",
+                "status": status.HTTP_400_BAD_REQUEST
+            }, status=status.HTTP_404_NOT_FOUND)
