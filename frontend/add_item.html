@@ -1,0 +1,61 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="my-5 text-center">Add Item</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="item_name">Item Name</label>
+                <input type="text" class="form-control" id="item_name" placeholder="Enter item name">
+            </div>
+            <div class="form-group">
+                <label for="seller">Seller</label>
+                <input type="text" class="form-control" id="seller" placeholder="Enter seller">
+            </div>
+            <div class="form-group">
+                <label for="item_desc">Item Description</label>
+                <input type="text" class="form-control" id="item_desc" placeholder="Enter item description">
+            </div>
+            <div class="form-group">
+                <label for="item_price">Item Price</label>
+                <input type="text" class="form-control" id="item_price" placeholder="Enter item price">
+            </div>
+            <div class="form-group">
+                <label for="item_quantity">Item Quantity</label>
+                <input type="text" class="form-control" id="item_quantity" placeholder="Enter item quantity">
+            </div>
+            <button type="button" class="btn btn-primary" id="add_item_button">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("add_item_button").addEventListener("click", function () {
+            let item_name = document.getElementById("item_name").value;
+            let seller = document.getElementById("seller").value;
+            let item_desc = document.getElementById("item_desc").value;
+            let item_price = document.getElementById("item_price").value;
+            let item_quantity = document.getElementById("item_quantity").value;
+
+            fetch("http://localhost:8000/inventory/add_item/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: item_name,
+                    seller: seller,
+                    description: item_desc,
+                    price: item_price,
+                    quantity: item_quantity
+                })
+            })
+            location.href = "index.html";
+        });
+    </script>
+</body>
+
+</html>

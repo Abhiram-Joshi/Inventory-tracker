@@ -1,0 +1,116 @@
+<html>
+
+<head>
+    <title>Shop</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+
+</head>
+
+<body>
+    <div class="container my-5">
+        <h1 class="text-center">Welcome to the shop!</h1>
+        <button id="fetch_items" class="my-3 btn btn-outline-success btn-block">Fetch all items</button>
+        <table class="table table-striped" id="inventory">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Quantity</th>
+            </tr>
+        </table>
+
+        <hr class="my-3">
+
+        <button class="btn btn-primary btn-block" onclick="location.href = 'add_item.html'">Add Item</button>
+
+        <hr class="my-3">
+
+        <form>
+            <div class="form-group">
+                <label for="item_id">Item ID</label>
+                <input type="text" class="form-control" id="item_id" placeholder="Enter item id">
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <input type="text" class="form-control" id="quantity" placeholder="Enter quantity">
+            </div>
+            <button type="button" class="btn btn-primary" id="buy_item_button">Buy Item</button>
+            <button type="button" class="btn btn-danger" id="remove_item_button">Remove Item</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById("fetch_items").addEventListener("click", function () {
+            fetch("http://localhost:8000/inventory/items/")
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    let table = document.getElementById("inventory");
+                    for (let i = 0; i < data["data"].length; i++) {
+                        let row = table.insertRow(i + 1);
+
+                        let cell1 = row.insertCell(0);
+                        let cell2 = row.insertCell(1);
+                        let cell3 = row.insertCell(2);
+                        let cell4 = row.insertCell(3);
+                        let cell5 = row.insertCell(4);
+
+                        cell1.innerHTML = data["data"][i].id;
+                        cell2.innerHTML = data["data"][i].name;
+                        cell3.innerHTML = data["data"][i].description;
+                        cell4.innerHTML = data["data"][i].price;
+                        cell5.innerHTML = data["data"][i].quantity;
+                    }
+                });
+            document.getElementById("fetch_items").disabled = true;
+        });
+
+        function buy_item(quantity, id) {
+            fetch("http://localhost:8000/inventory/item/buy/?id=" + id, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    quantity: quantity
+                })
+            })
+                .then(response => {
+                    if (response.status == 200) {
+                        alert("Item bought successfully");
+                    } else {
+                        console.log(response)
+                        alert("Item could not be bought\nStatus Text = " + response.statusText);
+                    }
+                });
+        }
+
+        function remove_item(id) {
+            fetch("http://localhost:8000/inventory/item/delete/?id=" + id, {
+                method: "DELETE"
+            })
+                .then(response => {
+                    if (response.status == 200) {
+                        alert("Item deleted successfully");
+                    } else {
+                        console.log(response)
+                        alert("Item could not be deleted\nStatus Text = " + response.statusText);
+                    }
+                });
+        }
+
+        document.getElementById("buy_item_button").addEventListener("click", function () {
+            let id = document.getElementById("item_id").value;
+            let quantity = document.getElementById("quantity").value;
+            buy_item(quantity, id);
+        });
+
+        document.getElementById("remove_item_button").addEventListener("click", function () {
+            let id = document.getElementById("item_id").value;
+            remove_item(id);
+        });
+
+    </script>
+</body>
+
+</html>
