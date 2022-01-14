@@ -3,4 +3,5 @@ from . import views
 
 urlpatterns = [
     re_path(r"^add_item", views.CreateItemView.as_view(), name="add_inventory_item"),
+    re_path(r"^items/", views.ListItemView.as_view(), name="list_inventory_item"),
 ]
