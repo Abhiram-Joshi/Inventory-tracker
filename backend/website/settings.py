@@ -27,7 +27,7 @@ SECRET_KEY = 'h!7d!oww#(6$(zb_nbjkt*w1wh9fd+w0iyqkoo&5*!n$j#_70f'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["shopify-iinventory.herokuapp.com",]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'website.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    "default": dj_database_url.config(default=f"postgresql://localhost:5432/postgres?user=postgres&password={config('DB_PASSWORD')}"),
+    "default": dj_database_url.config(),
 }
 
 
