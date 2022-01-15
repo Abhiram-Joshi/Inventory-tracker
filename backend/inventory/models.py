@@ -16,6 +16,7 @@ class Shipment(models.Model):
     quantity = models.PositiveIntegerField()
     date_shipped = models.DateField(auto_now_add=True)
     cancelled = models.BooleanField(default=False)
+    delivered = models.BooleanField(default=False)
 
     def __str__(self):
         return self.item.name

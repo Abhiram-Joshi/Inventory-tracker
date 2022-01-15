@@ -91,3 +91,60 @@ class CreateShipmentView(CreateAPIView):
             serializer.save()
         else:
             ParseError("Not enough quantity available")
+
+class ShipmentDeliveredView(UpdateAPIView):
+
+    def get_queryset(self):
+        return Shipment.objects.all()
+
+    def get_object(self):
+        shipment = self.get_queryset().filter(id=self.request.query_params["id"])
+        return shipment
+
+    def update(self, request, *args, **kwargs):
+        shipment = self.get_object()
+        instance = shipment[0]
+        if not instance.cancelled:
+            instance.delivered = True
+            instance.save()
+            return Response({
+                "data": shipment.values()[0],
+                "message": "Shipment delivered",
+                "status": status.HTTP_200_OK,
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "data": [],
+                "message": "Shipment cancelled. Cannot be delivered",
+                "status": status.HTTP_400_BAD_REQUEST
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+class ShipmentCancelledView(UpdateAPIView):
+    
+        def get_queryset(self):
+            return Shipment.objects.all()
+    
+        def get_object(self):
+            shipment = self.get_queryset().filter(id=self.request.query_params["id"])
+            return shipment
+    
+        def update(self, request, *args, **kwargs):
+            shipment = self.get_object()
+            instance = shipment[0]
+            if not instance.delivered:
+                item = Item.objects.get(id=instance.item.id)
+                item.quantity += instance.quantity
+                item.save()
+                instance.cancelled = True
+                instance.save()
+                return Response({
+                    "data": shipment.values()[0],
+                    "message": "Shipment cancelled",
+                    "status": status.HTTP_200_OK,
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    "data": [],
+                    "message": "Shipment already delivered. Cannot be cancelled",
+                    "status": status.HTTP_400_BAD_REQUEST
+                }, status=status.HTTP_400_BAD_REQUEST)
