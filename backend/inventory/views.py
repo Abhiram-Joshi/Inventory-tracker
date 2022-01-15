@@ -3,6 +3,7 @@ from .serializers import *
 from .models import *
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import ParseError
 # Create your views here.
 
 class CreateItemView(CreateAPIView):
@@ -78,3 +79,15 @@ class DeleteItemView(DestroyAPIView):
                 "message": "Item could not be removed",
                 "status": status.HTTP_400_BAD_REQUEST
             }, status=status.HTTP_404_NOT_FOUND)
+
+class CreateShipmentView(CreateAPIView):
+    serializer_class = ShipmentSerializer
+
+    def perform_create(self, serializer):
+        item = Item.objects.get(id=serializer.validated_data["item"].id)
+        if item.quantity >= serializer.validated_data["quantity"]:
+            item.quantity -= serializer.validated_data["quantity"]
+            item.save()
+            serializer.save()
+        else:
+            ParseError("Not enough quantity available")

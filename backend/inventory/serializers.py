@@ -14,3 +14,8 @@ class BuyItemSerializer(serializers.Serializer):
         if quantity <= 0:
             raise serializers.ValidationError("Quantity must be greater than 0")
         return quantity
+
+class ShipmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shipment
+        fields = ("item", "quantity")
