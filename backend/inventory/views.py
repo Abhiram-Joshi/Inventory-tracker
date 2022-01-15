@@ -55,6 +55,7 @@ class BuyItemView(UpdateAPIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 class DeleteItemView(DestroyAPIView):
+    serializer_class = ItemSerializer
 
     def get_queryset(self):
         return Item.objects.all()
@@ -66,10 +67,10 @@ class DeleteItemView(DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         item = self.get_object()
         if item.exists():
-            name = item[0].name
+            data = self.get_serializer(item.first()).data
             item.first().delete()
             return Response({
-                "data": name,
+                "data": data,
                 "message": "Item removed",
                 "status": status.HTTP_200_OK,
             }, status = status.HTTP_200_OK)
