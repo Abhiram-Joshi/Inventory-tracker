@@ -82,7 +82,7 @@ class DeleteItemView(DestroyAPIView):
             }, status=status.HTTP_404_NOT_FOUND)
 
 class CreateShipmentView(CreateAPIView):
-    serializer_class = ShipmentSerializer
+    serializer_class = CreateShipmentSerializer
 
     def perform_create(self, serializer):
         item = Item.objects.get(id=serializer.validated_data["item"].id)
@@ -149,3 +149,18 @@ class ShipmentCancelledView(UpdateAPIView):
                     "message": "Shipment already delivered. Cannot be cancelled",
                     "status": status.HTTP_400_BAD_REQUEST
                 }, status=status.HTTP_400_BAD_REQUEST)
+
+class ListShipmentView(ListAPIView):
+    serializer_class = ShipmentSerializer
+
+    def get_queryset(self):
+        return Shipment.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            "data": serializer.data,
+            "message": "Shipments retrieved successfully",
+            "status": status.HTTP_200_OK,
+        }, status=status.HTTP_200_OK)

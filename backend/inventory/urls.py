@@ -12,4 +12,5 @@ urlpatterns = [
     re_path(r"^create_shipment", views.CreateShipmentView.as_view(), name="create_shipment"),
     re_path(r"^shipment/delivered", views.ShipmentDeliveredView.as_view(), name="shipment_delivered"),
     re_path(r"^shipment/cancel", views.ShipmentCancelledView.as_view(), name="shipment_cancel"),
+    re_path(r"^shipments/", views.ListShipmentView.as_view(), name="list_shipment"),
 ]
