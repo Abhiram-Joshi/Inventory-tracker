@@ -27,7 +27,7 @@ SECRET_KEY = 'h!7d!oww#(6$(zb_nbjkt*w1wh9fd+w0iyqkoo&5*!n$j#_70f'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["shopify-iinventory.herokuapp.com",]
+ALLOWED_HOSTS = ["shopify-iinventory.herokuapp.com", "127.0.0.1", "localhost",]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
