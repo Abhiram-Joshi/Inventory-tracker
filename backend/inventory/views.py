@@ -9,6 +9,14 @@ from rest_framework.exceptions import ParseError
 class CreateItemView(CreateAPIView):
     serializer_class = ItemSerializer
 
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        return Response({
+            "data": response.data,
+            "message": "Item created successfully",
+            "status": status.HTTP_200_OK,
+        }, status = status.HTTP_200_OK)
+
 class ListItemView(ListAPIView):
     serializer_class = ItemSerializer
 
@@ -77,21 +85,31 @@ class DeleteItemView(DestroyAPIView):
         else:
             return Response({
                 "data": [],
-                "message": "Item could not be removed",
+                "message": "Item not found",
                 "status": status.HTTP_400_BAD_REQUEST
             }, status=status.HTTP_404_NOT_FOUND)
 
 class CreateShipmentView(CreateAPIView):
     serializer_class = CreateShipmentSerializer
 
-    def perform_create(self, serializer):
-        item = Item.objects.get(id=serializer.validated_data["item"].id)
-        if item.quantity >= serializer.validated_data["quantity"]:
-            item.quantity -= serializer.validated_data["quantity"]
+    def create(self, request, *args, **kwargs):
+        item = Item.objects.get(id=request.data["item"])
+        if item.quantity >= request.data["quantity"]:
+            item.quantity -= request.data["quantity"]
             item.save()
-            serializer.save()
+            response = super().create(request, *args, **kwargs)
+            return Response({
+                "data": response.data,
+                "message": "Shipment created successfully",
+                "status": status.HTTP_200_OK,
+            }, status = status.HTTP_200_OK)
+        
         else:
-            ParseError("Not enough quantity available")
+            return Response({
+                "data": [],
+                "message": "Not enough quantity available",
+                "status": status.HTTP_400_BAD_REQUEST,
+            }, status = status.HTTP_400_BAD_REQUEST)
 
 class ShipmentDeliveredView(UpdateAPIView):
 
@@ -105,7 +123,23 @@ class ShipmentDeliveredView(UpdateAPIView):
     def update(self, request, *args, **kwargs):
         shipment = self.get_object()
         instance = shipment[0]
-        if not instance.cancelled:
+        if instance.cancelled:
+            return Response({
+                "data": shipment.values()[0],
+                "message": "Shipment cancelled, cannot be delivered",
+                "status": status.HTTP_200_OK,
+            }, status=status.HTTP_200_OK)
+
+        if instance.delivered:
+            instance.delivered = True
+            instance.save()
+            return Response({
+                "data": shipment.values()[0],
+                "message": "Shipment already delivered",
+                "status": status.HTTP_400_BAD_REQUEST,
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
             instance.delivered = True
             instance.save()
             return Response({
@@ -113,12 +147,6 @@ class ShipmentDeliveredView(UpdateAPIView):
                 "message": "Shipment delivered",
                 "status": status.HTTP_200_OK,
             }, status=status.HTTP_200_OK)
-        else:
-            return Response({
-                "data": [],
-                "message": "Shipment cancelled. Cannot be delivered",
-                "status": status.HTTP_400_BAD_REQUEST
-            }, status=status.HTTP_400_BAD_REQUEST)
 
 class ShipmentCancelledView(UpdateAPIView):
     
@@ -132,7 +160,22 @@ class ShipmentCancelledView(UpdateAPIView):
         def update(self, request, *args, **kwargs):
             shipment = self.get_object()
             instance = shipment[0]
-            if not instance.delivered:
+
+            if instance.delivered:
+                return Response({
+                    "data": [],
+                    "message": "Shipment already delivered, cannot be cancelled",
+                    "status": status.HTTP_400_BAD_REQUEST
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            if instance.cancelled:
+                return Response({
+                    "data": [],
+                    "message": "Shipment already cancelled",
+                    "status": status.HTTP_400_BAD_REQUEST
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            else:
                 item = Item.objects.get(id=instance.item.id)
                 item.quantity += instance.quantity
                 item.save()
@@ -143,12 +186,6 @@ class ShipmentCancelledView(UpdateAPIView):
                     "message": "Shipment cancelled",
                     "status": status.HTTP_200_OK,
                 }, status=status.HTTP_200_OK)
-            else:
-                return Response({
-                    "data": [],
-                    "message": "Shipment already delivered. Cannot be cancelled",
-                    "status": status.HTTP_400_BAD_REQUEST
-                }, status=status.HTTP_400_BAD_REQUEST)
 
 class ListShipmentView(ListAPIView):
     serializer_class = ShipmentSerializer
