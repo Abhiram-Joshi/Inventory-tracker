@@ -1,0 +1,87 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <button id="fetch_items" class="my-3 btn btn-outline-success btn-block">Fetch all items</button>
+        <table class="table table-striped" id="inventory">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Quantity</th>
+            </tr>
+        </table>
+        <hr>
+        <h1 class="my-5 text-center">Create shipment</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="item_name">Item ID</label>
+                <input type="number" class="form-control" id="item_id" placeholder="Enter item ID">
+            </div>
+            <div class="form-group">
+                <label for="seller">Quantity</label>
+                <input type="text" class="form-control" id="quantity" placeholder="Enter quantity">
+            </div>
+            <button type="button" class="btn btn-primary" id="create_shipment_button">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("create_shipment_button").addEventListener("click", function () {
+            // let item_name = document.getElementById("item_name").value;
+            // let seller = document.getElementById("seller").value;
+            // let item_desc = document.getElementById("item_desc").value;
+            // let item_price = document.getElementById("item_price").value;
+            // let item_quantity = document.getElementById("item_quantity").value;
+            let item_id = document.getElementById("item_id").value;
+            let quantity = document.getElementById("quantity").value;
+
+            fetch("http://localhost:8000/inventory/create_shipment/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    item: item_id,
+                    quantity: quantity,
+                    // seller: seller,
+                    // description: item_desc,
+                    // price: item_price,
+                })
+            })
+            location.href = "shipment.html";
+        });
+
+        document.getElementById("fetch_items").addEventListener("click", function () {
+            fetch("http://localhost:8000/inventory/items/")
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    let table = document.getElementById("inventory");
+                    for (let i = 0; i < data["data"].length; i++) {
+                        let row = table.insertRow(i + 1);
+
+                        let cell1 = row.insertCell(0);
+                        let cell2 = row.insertCell(1);
+                        let cell3 = row.insertCell(2);
+                        let cell4 = row.insertCell(3);
+                        let cell5 = row.insertCell(4);
+
+                        cell1.innerHTML = data["data"][i].id;
+                        cell2.innerHTML = data["data"][i].name;
+                        cell3.innerHTML = data["data"][i].description;
+                        cell4.innerHTML = data["data"][i].price;
+                        cell5.innerHTML = data["data"][i].quantity;
+                    }
+                });
+            document.getElementById("fetch_items").disabled = true;
+        });
+    </script>
+</body>
+
+</html>
