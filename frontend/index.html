@@ -38,6 +38,7 @@
             <button type="button" class="btn btn-primary" id="buy_item_button">Buy Item</button>
             <button type="button" class="btn btn-danger" id="remove_item_button">Remove Item</button>
         </form>
+        <button type="button" class="btn btn-success" id="go_to_shipment">Go to shipment</button>
     </div>
     <script>
         document.getElementById("fetch_items").addEventListener("click", function () {
@@ -108,6 +109,9 @@
         document.getElementById("remove_item_button").addEventListener("click", function () {
             let id = document.getElementById("item_id").value;
             remove_item(id);
+        });
+        document.getElementById("go_to_shipment").addEventListener("click", function () {
+            location.href = "shipment.html";
         });
 
     </script>

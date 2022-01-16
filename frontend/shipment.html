@@ -36,6 +36,7 @@
             <button type="button" class="btn btn-primary" id="cancelled_shipment_button">Mark as cancelled</button>
             <button type="button" class="btn btn-danger" id="delivered_shipment_button">Mark as delivered</button>
         </form>
+        <button type="button" class="btn btn-success" id="go_to_inventory">Go to inventory</button>
     </div>
     <script>
         document.getElementById("fetch_shipments").addEventListener("click", function () {
@@ -101,6 +102,10 @@
         document.getElementById("cancelled_shipment_button").addEventListener("click", function () {
                 let id = document.getElementById("shipment_id").value;
                 cancel_shipment(id);
+        });
+
+        document.getElementById("go_to_inventory").addEventListener("click", function () {
+            location.href = "index.html";
         });
 
     </script>
