@@ -94,8 +94,10 @@ class CreateShipmentView(CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         item = Item.objects.get(id=request.data["item"])
-        if item.quantity >= request.data["quantity"]:
-            item.quantity -= request.data["quantity"]
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if item.quantity >= serializer.validated_data["quantity"]:
+            item.quantity -= serializer.validated_data["quantity"]
             item.save()
             response = super().create(request, *args, **kwargs)
             return Response({
@@ -127,8 +129,8 @@ class ShipmentDeliveredView(UpdateAPIView):
             return Response({
                 "data": shipment.values()[0],
                 "message": "Shipment cancelled, cannot be delivered",
-                "status": status.HTTP_200_OK,
-            }, status=status.HTTP_200_OK)
+                "status": status.HTTP_400_BAD_REQUEST,
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         if instance.delivered:
             instance.delivered = True

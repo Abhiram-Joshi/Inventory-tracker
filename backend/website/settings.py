@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'website.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    "default": dj_database_url.config(),
+    "default": dj_database_url.config(default="postgres://gpmhkifesmzdnt:6f1f029ddb8a6be77e65b5df461fb18c9ded441fa8a2eee44b5bfbed683e3e4b@ec2-54-76-249-45.eu-west-1.compute.amazonaws.com:5432/d8qco6p9v70fn4"),
 }
 
 
