@@ -21,11 +21,11 @@
             </tr>
         </table>
 
-        <hr class="my-3">
+        <hr class="my-5" style="border-top: 2px solid black">
 
         <button class="btn btn-primary btn-block" onclick="location.href = 'create_shipment.html'">Create Shipment</button>
 
-        <hr class="my-3">
+        <hr class="my-5" style="border-top: 2px solid black">
 
         <form>
             <div class="form-group">
@@ -78,7 +78,8 @@
                         console.log(response)
                         alert("Shipment could not be delivered\nStatus Text = " + response.statusText);
                     }
-                });
+                })
+                .then(location.reload());
         }
 
         function cancel_shipment(id) {
@@ -92,7 +93,8 @@
                         console.log(response)
                         alert("Shipment could not be cancelled\nStatus Text = " + response.statusText);
                     }
-                });
+                })
+                .then(location.reload());
         }
 
         document.getElementById("delivered_shipment_button").addEventListener("click", function () {

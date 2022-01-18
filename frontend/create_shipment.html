@@ -25,7 +25,7 @@
             </div>
             <div class="form-group">
                 <label for="seller">Quantity</label>
-                <input type="text" class="form-control" id="quantity" placeholder="Enter quantity">
+                <input type="number" class="form-control" id="quantity" placeholder="Enter quantity">
             </div>
             <button type="button" class="btn btn-primary" id="create_shipment_button">Submit</button>
         </form>
@@ -41,7 +41,7 @@
             let item_id = document.getElementById("item_id").value;
             let quantity = document.getElementById("quantity").value;
 
-            fetch("http://localhost:8000/inventory/create_shipment/", {
+            fetch("http://localhost:8000/inventory/create_shipment", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
